@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "KoinCompose"
+rootProject.name = "composeroom"
 include ':app'

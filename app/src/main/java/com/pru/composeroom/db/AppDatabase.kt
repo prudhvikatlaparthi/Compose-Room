@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.pru.composeroom.dao.PatientDao
 import com.pru.composeroom.models.Patient
-import com.pru.composeroom.typeconverters.DateConverter
+import com.pru.composeroom.utils.typeconverters.DateConverter
 
 @Database(entities = [Patient::class], version = 1)
 @TypeConverters(DateConverter::class)

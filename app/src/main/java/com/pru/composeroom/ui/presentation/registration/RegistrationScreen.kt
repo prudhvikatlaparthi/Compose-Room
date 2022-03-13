@@ -1,40 +1,53 @@
 package com.pru.composeroom.ui.presentation.registration
 
+import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.pru.composeroom.R
 import com.pru.composeroom.ui.presentation.custom_components.DatePicker
 import com.pru.composeroom.ui.presentation.custom_components.EditText
 import com.pru.composeroom.ui.presentation.custom_components.MyButton
 import com.pru.composeroom.ui.presentation.custom_components.Spinner
-import com.pru.composeroom.ui.theme.MainColor
 import com.pru.composeroom.utils.ScreenRoute
 import kotlinx.coroutines.flow.collectLatest
 import java.util.*
@@ -51,7 +64,6 @@ fun RegistrationScreen(
         viewModel.snackBarMessageState.collectLatest {
             scaffoldState.snackbarHostState.showSnackbar(it)
         }
-
     }
     LaunchedEffect(key1 = Unit) {
         viewModel.screenNavigation.collectLatest {
@@ -60,7 +72,7 @@ fun RegistrationScreen(
             }
         }
     }
-    Scaffold(backgroundColor = MainColor, scaffoldState = scaffoldState) {
+    Scaffold(scaffoldState = scaffoldState) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -79,11 +91,15 @@ fun RegistrationScreen(
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "Please provide patient details",
+                text = stringResource(R.string.please_prv_pat_details),
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
+            Spacer(modifier = Modifier.height(20.dp))
+            ProfilePic(bitmap = viewModel.patientImage, onResult = {
+                viewModel.patientImage = it
+            })
             Spacer(modifier = Modifier.height(20.dp))
             EditText(
                 modifier = Modifier,
@@ -223,9 +239,86 @@ fun RegistrationScreen(
     }
 }
 
-
-@Preview(showBackground = true)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun PreviewComp() {
-    RegistrationScreen(navController = rememberNavController())
+fun ProfilePic(modifier: Modifier = Modifier, bitmap: Bitmap?, onResult: (image: Bitmap?) -> Unit) {
+    val context = LocalContext.current
+    val cameraPermissionState = rememberPermissionState(
+        android.Manifest.permission.CAMERA
+    )
+    val cameraCapture = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview(),
+        onResult = onResult
+    )
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        when (cameraPermissionState.status) {
+            PermissionStatus.Granted -> {
+                if (bitmap == null) {
+                    Image(
+                        painter = painterResource(id = R.drawable.user),
+                        contentDescription = null,
+                        modifier = modifier
+                            .clip(CircleShape)
+                            .size(100.dp)
+                            .clickable {
+                                cameraCapture.launch()
+                            },
+                        alignment = Alignment.Center,
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = null,
+                        modifier = modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                            .clickable {
+                                cameraCapture.launch()
+                            },
+                        alignment = Alignment.Center,
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+            is PermissionStatus.Denied -> {
+                if (cameraPermissionState.status.shouldShowRationale) {
+                    TextButton(onClick = {
+                        try {
+                            val intent = Intent()
+                            intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                            val uri: Uri =
+                                Uri.fromParts(
+                                    context.getString(R.string.package_),
+                                    context.packageName,
+                                    null
+                                )
+                            intent.data = uri
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }) {
+                        Text(
+                            text = "Please enable camera permission from settings in order to use this feature.",
+                            color = Color.White
+                        )
+                    }
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.user),
+                        contentDescription = null,
+                        modifier = modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                            .clickable {
+                                cameraPermissionState.launchPermissionRequest()
+                            },
+                        alignment = Alignment.Center,
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+        }
+    }
 }

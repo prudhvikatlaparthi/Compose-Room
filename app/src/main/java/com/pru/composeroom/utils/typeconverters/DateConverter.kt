@@ -1,4 +1,4 @@
-package com.pru.composeroom.typeconverters
+package com.pru.composeroom.utils.typeconverters
 
 import androidx.room.TypeConverter
 import java.util.*

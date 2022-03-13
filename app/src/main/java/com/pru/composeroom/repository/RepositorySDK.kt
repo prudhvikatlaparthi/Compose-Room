@@ -3,13 +3,16 @@ package com.pru.composeroom.repository
 import com.pru.composeroom.R
 import com.pru.composeroom.dao.PatientDao
 import com.pru.composeroom.models.Patient
-import com.pru.composeroom.resource.ResourceProvider
 import com.pru.composeroom.utils.UIState
+import com.pru.composeroom.utils.resource.ResourceProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 
-class RepositorySDK(private val patientDao: PatientDao, private val resourceProvider: ResourceProvider) {
+class RepositorySDK(
+    private val patientDao: PatientDao,
+    private val resourceProvider: ResourceProvider
+) {
 
     suspend fun insertPatient(patient: Patient) {
         patientDao.insertAll(patient)

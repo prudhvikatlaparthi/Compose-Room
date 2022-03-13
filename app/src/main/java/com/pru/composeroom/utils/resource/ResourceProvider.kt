@@ -1,4 +1,4 @@
-package com.pru.composeroom.resource
+package com.pru.composeroom.utils.resource
 
 import android.content.Context
 import androidx.annotation.StringRes
