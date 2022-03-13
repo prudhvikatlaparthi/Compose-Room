@@ -5,7 +5,7 @@ import androidx.room.Room
 import com.pru.composeroom.dao.PatientDao
 import com.pru.composeroom.db.AppDatabase
 import com.pru.composeroom.repository.RepositorySDK
-import com.pru.composeroom.resource.ResourceProvider
+import com.pru.composeroom.utils.resource.ResourceProvider
 import com.pru.composeroom.utils.Constants.kDBNAME
 import dagger.Module
 import dagger.Provides

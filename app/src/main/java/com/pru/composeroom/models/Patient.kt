@@ -16,4 +16,5 @@ data class Patient(
     @ColumnInfo(name = "marital_status") val maritalStatus: String,
     @ColumnInfo(name = "address") val address: String,
     @ColumnInfo(name = "reason_for_reg") val reasonForReg: String,
+    @ColumnInfo(typeAffinity = ColumnInfo.BLOB) var image: ByteArray? = null
 )

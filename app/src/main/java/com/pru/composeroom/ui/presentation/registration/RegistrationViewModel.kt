@@ -1,5 +1,6 @@
 package com.pru.composeroom.ui.presentation.registration
 
+import android.graphics.Bitmap
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,6 +10,7 @@ import com.pru.composeroom.models.Patient
 import com.pru.composeroom.repository.RepositorySDK
 import com.pru.composeroom.utils.DateUtils
 import com.pru.composeroom.utils.Enumerator
+import com.pru.composeroom.utils.Global.extractByteArray
 import com.pru.composeroom.utils.ScreenRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +41,8 @@ class RegistrationViewModel @Inject constructor(private val repositorySDK: Repos
     var selectedMaritalStatus by mutableStateOf<Enumerator.MaritalStatus>(Enumerator.MaritalStatus.None)
 
     var selectedDOB by mutableStateOf(DateUtils.MyDateValue())
+
+    var patientImage by mutableStateOf<Bitmap?>(null)
 
     val genderList =
         listOf(Enumerator.Gender.Male, Enumerator.Gender.Female, Enumerator.Gender.Other)
@@ -102,7 +106,8 @@ class RegistrationViewModel @Inject constructor(private val repositorySDK: Repos
                     dateOfBirth = selectedDOB.date!!,
                     maritalStatus = selectedMaritalStatus.value,
                     address = address,
-                    reasonForReg = reasonForReg
+                    reasonForReg = reasonForReg,
+                    image = extractByteArray(patientImage)
                 )
                 repositorySDK.insertPatient(patient = patient)
                 screenNavigation.emit(ScreenRoute.PopBack)

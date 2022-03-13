@@ -11,4 +11,6 @@
     <string name="address">Address*</string>
     <string name="reason_for_reg">Reason for registration*</string>
     <string name="register">Register</string>
+    <string name="please_prv_pat_details">Please provide patient details</string>
+    <string name="package_">package</string>
 </resources>

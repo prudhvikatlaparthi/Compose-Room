@@ -2,10 +2,10 @@
 <resources>
 
     <style name="Theme.ComposeRoom" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/purple_700</item>
+        <item name="android:statusBarColor">@color/main_color</item>
     </style>
 
-    <style name="DatePickerTheme" parent="android:Theme.Material.Light.Dialog" >
-
+    <style name="DatePickerTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/main_color</item>
     </style>
 </resources>
